@@ -1,123 +1,134 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { motion } from "motion/react";
+import { useEffect, useState } from "react";
+import { HeroBackgroundSection } from "./HeroBackgroundSection";
+import { ThreeDCard } from "./ThreeDCard";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./ui/accordion";
 
 interface WebsiteBuilderProps {
-  subtitle: string;
-  title: string;
-  description: string;
-  introTitle: string;
-  introDescription: string;
-  featuredTitle: string;
-  featuredDescription: string;
-  location: string;
-  instagram: string;
-  facebook: string;
-  companyLogo: string;
-  headerBackground: string;
-  introMedia: string;
-  introImage: string;
-  featuredImage: string;
+  headerSection: {
+    title: string;
+    subtitle: string;
+    description: string;
+    headerBackground: string;
+    companyLogo: string;
+  };
+  introSection: {
+    introTitle: string;
+    introDescription: string;
+    introMedia: string;
+  };
+  introMediaSection: {
+    introImage: string;
+  };
+  featuredMenuSection: {
+    featuredTitle: string;
+    featuredDescription: string;
+    featuredImage: string;
+  };
+  footerSection: {
+    location: string;
+    instagram: string;
+    facebook: string;
+  };
 }
 
 const WebsiteBuilder = (props: WebsiteBuilderProps) => {
   const {
-    subtitle: defaultSubtitle,
-    title: defaultTitle,
-    description: defaultDescription,
-    introTitle: defaultIntroTitle,
-    introDescription: defaultIntroDescription,
-    featuredTitle: defaultFeaturedTitle,
-    featuredDescription: defaultFeaturedDescription,
-    location: defaultLocation,
-    instagram: defaultInstagram,
-    facebook: defaultFacebook,
-    companyLogo: defaultCompanyLogo,
-    headerBackground: defaultHeaderBackground,
-    introMedia: defaultIntroMedia,
-    introImage: defaultIntroImage,
-    featuredImage: defaultFeaturedImage
+    headerSection,
+    introSection,
+    introMediaSection,
+    featuredMenuSection,
+    footerSection,
   } = props;
 
-  const [subtitle, setSubtitle] = useState(defaultSubtitle);
-  const [title, setTitle] = useState(defaultTitle);
-  const [description, setDescription] = useState(defaultDescription);
-  const [introTitle, setIntroTitle] = useState(defaultIntroTitle);
-  const [introDescription, setIntroDescription] = useState(defaultIntroDescription);
-  const [introMedia, setIntroMedia] = useState(defaultIntroMedia);
-  const [introImage, setIntroImage] = useState(defaultIntroImage);
-  const [featuredTitle, setFeaturedTitle] = useState(defaultFeaturedTitle);
-  const [featuredDescription, setFeaturedDescription] = useState(defaultFeaturedDescription);
-  const [featuredImage, setFeaturedImage] = useState(defaultFeaturedImage);
-  const [companyLogo, setCompanyLogo] = useState(defaultCompanyLogo);
-  const [headerBackground, setHeaderBackground] = useState(defaultHeaderBackground);
-  const [location, setLocation] = useState(defaultLocation);
-  const [instagram, setInstagram] = useState(defaultInstagram);
-  const [facebook, setFacebook] = useState(defaultFacebook);
-  const [isPreview, setIsPreview] = useState(false);
-  const [titleColor, setTitleColor] = useState('#000000');
-  const [subtitleColor, setSubtitleColor] = useState('#000000');
-  const [descriptionColor, setDescriptionColor] = useState('#000000');
+  const [state, setState] = useState({
+    header: {
+      ...headerSection,
+      titleColor: "#000000",
+      subtitleColor: "#000000",
+      descriptionColor: "#000000",
+    },
+    intro: {
+      ...introSection,
+      introMedia: introSection?.introMedia,
+      introTitleColor: "#000000",
+      introDescriptionColor: "#000000",
+    },
+    introMediaSection: introMediaSection,
+    featured: {
+      ...featuredMenuSection,
+      featuredTitleColor: "#000000",
+      featuredDescriptionColor: "#000000",
+    },
+    footer: footerSection,
+    isPreview: true,
+  });
 
   useEffect(() => {
-    setSubtitle(defaultSubtitle);
-    setTitle(defaultTitle);
-    setDescription(defaultDescription);
-    setIntroTitle(defaultIntroTitle);
-    setIntroDescription(defaultIntroDescription);
-    setFeaturedTitle(defaultFeaturedTitle);
-    setFeaturedDescription(defaultFeaturedDescription);
-    setLocation(defaultLocation);
-    setInstagram(defaultInstagram);
-    setFacebook(defaultFacebook);
-    setCompanyLogo(defaultCompanyLogo);
-    setHeaderBackground(defaultHeaderBackground);
-    setIntroMedia(defaultIntroMedia);
-    setIntroImage(defaultIntroImage);
-    setFeaturedImage(defaultFeaturedImage);
+    setState((prevState) => ({
+      ...prevState,
+      header: { ...headerSection },
+      intro: { ...introSection },
+      introMediaSection: { ...introMediaSection },
+      featured: { ...featuredMenuSection },
+      footer: { ...footerSection },
+    }));
   }, [
-    defaultSubtitle,
-    defaultTitle,
-    defaultDescription,
-    defaultIntroTitle,
-    defaultIntroDescription,
-    defaultFeaturedTitle,
-    defaultFeaturedDescription,
-    defaultLocation,
-    defaultInstagram,
-    defaultFacebook,
-    defaultCompanyLogo,
-    defaultHeaderBackground,
-    defaultIntroMedia,
-    defaultIntroImage,
-    defaultFeaturedImage
+    headerSection,
+    introSection,
+    introMediaSection,
+    featuredMenuSection,
+    footerSection,
   ]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setFile: React.Dispatch<React.SetStateAction<string | null>>) => {
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    key: keyof typeof state
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setFile(reader.result as string);
+      reader.onloadend = (data) => {
+        console.log(data);
+        setState((prevState) => ({
+          ...prevState,
+          [key.split(".")[0]]: {
+            ...prevState?.[key?.split(".")?.[0]],
+            [key.split(".")[1]]: reader.result,
+          },
+        }));
       };
       reader.readAsDataURL(file);
     }
   };
 
+  console.log("sdfsfds", state);
+
   const togglePreview = () => {
-    setIsPreview(!isPreview);
+    setState((prevState) => ({
+      ...prevState,
+      isPreview: !prevState.isPreview,
+    }));
   };
 
   return (
     <div>
       <div className="flex justify-end mb-4">
-        <Button onClick={togglePreview}>{isPreview ? 'Exit Preview' : 'Preview'}</Button>
+        <Button onClick={togglePreview}>
+          {state.isPreview ? "Exit Preview" : "Preview"}
+        </Button>
         <Button className="ml-2">Save & publish</Button>
       </div>
       <div className="flex">
-        {!isPreview && (
+        {!state.isPreview && (
           <div className="w-1/3 p-4 h-400px">
             <Accordion type="single" collapsible>
               <AccordionItem value="header">
@@ -128,25 +139,139 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
                       <div className="mt-4">
                         <h3 className="text-lg font-semibold">Visuals</h3>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Company logo</label>
-                          <Input type="file" onChange={(e) => handleFileChange(e, setCompanyLogo)} />
+                          <label className="block text-sm font-medium">
+                            Company logo
+                          </label>
+                          <Input
+                            type="file"
+                            onChange={(e) =>
+                              handleFileChange(e, "header.companyLogo")
+                            }
+                          />
                         </div>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Header background</label>
-                          <Input type="file" onChange={(e) => handleFileChange(e, setHeaderBackground)} />
+                          <label className="block text-sm font-medium">
+                            Header background
+                          </label>
+                          <Input
+                            type="file"
+                            onChange={(e) =>
+                              handleFileChange(e, "header.headerBackground")
+                            }
+                          />
                         </div>
                         <h3 className="text-lg font-semibold mt-4">Text</h3>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Subtitle (optional)</label>
-                          <Input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} />
+                          <label className="block text-sm font-medium">
+                            Subtitle (optional)
+                          </label>
+                          <Input
+                            value={state.header.subtitle}
+                            onChange={(e) =>
+                              setState((prev) => ({
+                                ...prev,
+                                header: {
+                                  ...prev.header,
+                                  subtitle: e.target.value,
+                                },
+                              }))
+                            }
+                          />
                         </div>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Title *</label>
-                          <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+                          <label className="block text-sm font-medium">
+                            Title *
+                          </label>
+                          <Input
+                            value={state.header.title}
+                            onChange={(e) =>
+                              setState((prev) => ({
+                                ...prev,
+                                header: {
+                                  ...prev.header,
+                                  title: e.target.value,
+                                },
+                              }))
+                            }
+                          />
                         </div>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Description (optional)</label>
-                          <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+                          <label className="block text-sm font-medium">
+                            Description (optional)
+                          </label>
+                          <Input
+                            value={state.header.description}
+                            onChange={(e) =>
+                              setState((prev) => ({
+                                ...prev,
+                                header: {
+                                  ...prev.header,
+                                  description: e.target.value,
+                                },
+                              }))
+                            }
+                          />
+                        </div>
+                        <div className="mt-4">
+                          <h3 className="text-lg font-semibold">
+                            Appearance settings
+                          </h3>
+                          <div className="flex gap-4">
+                            <div className="mt-2">
+                              <label className="block text-sm font-medium">
+                                Title Color
+                              </label>
+                              <input
+                                type="color"
+                                value={state.header.titleColor}
+                                onChange={(e) =>
+                                  setState((prev) => ({
+                                    ...prev,
+                                    header: {
+                                      ...prev.header,
+                                      titleColor: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                            <div className="mt-2">
+                              <label className="block text-sm font-medium">
+                                Subtitle Color
+                              </label>
+                              <input
+                                type="color"
+                                value={state.header.subtitleColor}
+                                onChange={(e) =>
+                                  setState((prev) => ({
+                                    ...prev,
+                                    header: {
+                                      ...prev.header,
+                                      subtitleColor: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                            <div className="mt-2">
+                              <label className="block text-sm font-medium">
+                                Description Color
+                              </label>
+                              <input
+                                type="color"
+                                value={state.header.descriptionColor}
+                                onChange={(e) =>
+                                  setState((prev) => ({
+                                    ...prev,
+                                    header: {
+                                      ...prev.header,
+                                      descriptionColor: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -159,17 +284,95 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
                   <Card>
                     <CardContent>
                       <div className="mt-4">
+                        <h3 className="text-lg font-semibold mt-4">Text</h3>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Title</label>
-                          <Input value={introTitle} onChange={(e) => setIntroTitle(e.target.value)} />
+                          <label className="block text-sm font-medium">
+                            Title
+                          </label>
+                          <Input
+                            value={state.intro.introTitle}
+                            onChange={(e) =>
+                              setState((prev) => ({
+                                ...prev,
+                                intro: {
+                                  ...prev.intro,
+                                  introTitle: e.target.value,
+                                },
+                              }))
+                            }
+                          />
                         </div>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Description</label>
-                          <Input value={introDescription} onChange={(e) => setIntroDescription(e.target.value)} />
+                          <label className="block text-sm font-medium">
+                            Description
+                          </label>
+                          <Input
+                            value={state.intro.introDescription}
+                            onChange={(e) =>
+                              setState((prev) => ({
+                                ...prev,
+                                intro: {
+                                  ...prev.intro,
+                                  introDescription: e.target.value,
+                                },
+                              }))
+                            }
+                          />
                         </div>
+                        <h3 className="text-lg font-semibold">Visuals</h3>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Image/Video</label>
-                          <Input type="file" onChange={(e) => handleFileChange(e, setIntroMedia)} />
+                          <label className="block text-sm font-medium">
+                            Image/Video
+                          </label>
+                          <Input
+                            type="file"
+                            onChange={(e) =>
+                              handleFileChange(e, "intro.introMedia")
+                            }
+                          />
+                        </div>
+                        <div className="mt-4">
+                          <h3 className="text-lg font-semibold">
+                            Appearance settings
+                          </h3>
+                          <div className="flex gap-4">
+                            <div className="mt-2">
+                              <label className="block text-sm font-medium">
+                                Title Color
+                              </label>
+                              <input
+                                type="color"
+                                value={state.intro.introTitleColor}
+                                onChange={(e) =>
+                                  setState((prev) => ({
+                                    ...prev,
+                                    intro: {
+                                      ...prev.intro,
+                                      introTitleColor: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                            <div className="mt-2">
+                              <label className="block text-sm font-medium">
+                                Description Color
+                              </label>
+                              <input
+                                type="color"
+                                value={state.intro.introDescriptionColor}
+                                onChange={(e) =>
+                                  setState((prev) => ({
+                                    ...prev,
+                                    intro: {
+                                      ...prev.intro,
+                                      introDescriptionColor: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -182,9 +385,17 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
                   <Card>
                     <CardContent>
                       <div className="mt-4">
+                        <h3 className="text-lg font-semibold">Visuals</h3>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Image</label>
-                          <Input type="file" onChange={(e) => handleFileChange(e, setIntroImage)} />
+                          <label className="block text-sm font-medium">
+                            Image
+                          </label>
+                          <Input
+                            type="file"
+                            onChange={(e) =>
+                              handleFileChange(e, "intro.introImage")
+                            }
+                          />
                         </div>
                       </div>
                     </CardContent>
@@ -197,17 +408,95 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
                   <Card>
                     <CardContent>
                       <div className="mt-4">
+                        <h3 className="text-lg font-semibold mt-4">Text</h3>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Title</label>
-                          <Input value={featuredTitle} onChange={(e) => setFeaturedTitle(e.target.value)} />
+                          <label className="block text-sm font-medium">
+                            Title
+                          </label>
+                          <Input
+                            value={state.featured.featuredTitle}
+                            onChange={(e) =>
+                              setState((prev) => ({
+                                ...prev,
+                                featured: {
+                                  ...prev.featured,
+                                  featuredTitle: e.target.value,
+                                },
+                              }))
+                            }
+                          />
                         </div>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Description</label>
-                          <Input value={featuredDescription} onChange={(e) => setFeaturedDescription(e.target.value)} />
+                          <label className="block text-sm font-medium">
+                            Description
+                          </label>
+                          <Input
+                            value={state.featured.featuredDescription}
+                            onChange={(e) =>
+                              setState((prev) => ({
+                                ...prev,
+                                featured: {
+                                  ...prev.featured,
+                                  featuredDescription: e.target.value,
+                                },
+                              }))
+                            }
+                          />
                         </div>
+                        <h3 className="text-lg font-semibold">Visuals</h3>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Image</label>
-                          <Input type="file" onChange={(e) => handleFileChange(e, setFeaturedImage)} />
+                          <label className="block text-sm font-medium">
+                            Image
+                          </label>
+                          <Input
+                            type="file"
+                            onChange={(e) =>
+                              handleFileChange(e, "featured.featuredImage")
+                            }
+                          />
+                        </div>
+                        <div className="mt-4">
+                          <h3 className="text-lg font-semibold">
+                            Appearance settings
+                          </h3>
+                          <div className="flex gap-4">
+                            <div className="mt-2">
+                              <label className="block text-sm font-medium">
+                                Title Color
+                              </label>
+                              <input
+                                type="color"
+                                value={state.featured.featuredTitleColor}
+                                onChange={(e) =>
+                                  setState((prev) => ({
+                                    ...prev,
+                                    featured: {
+                                      ...prev.featured,
+                                      featuredTitleColor: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                            <div className="mt-2">
+                              <label className="block text-sm font-medium">
+                                Description Color
+                              </label>
+                              <input
+                                type="color"
+                                value={state.featured.featuredDescriptionColor}
+                                onChange={(e) =>
+                                  setState((prev) => ({
+                                    ...prev,
+                                    featured: {
+                                      ...prev.featured,
+                                      featuredDescriptionColor: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -220,83 +509,174 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
                   <Card>
                     <CardContent>
                       <div className="mt-4">
+                        <h3 className="text-lg font-semibold mt-4">Text</h3>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Location</label>
-                          <Input value={location} onChange={(e) => setLocation(e.target.value)} />
+                          <label className="block text-sm font-medium">
+                            Location
+                          </label>
+                          <Input
+                            value={state.footer.location}
+                            onChange={(e) =>
+                              setState((prev) => ({
+                                ...prev,
+                                footer: {
+                                  ...prev.footer,
+                                  location: e.target.value,
+                                },
+                              }))
+                            }
+                          />
                         </div>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Instagram</label>
-                          <Input value={instagram} onChange={(e) => setInstagram(e.target.value)} />
+                          <label className="block text-sm font-medium">
+                            Instagram
+                          </label>
+                          <Input
+                            value={state.footer.instagram}
+                            onChange={(e) =>
+                              setState((prev) => ({
+                                ...prev,
+                                footer: {
+                                  ...prev.footer,
+                                  instagram: e.target.value,
+                                },
+                              }))
+                            }
+                          />
                         </div>
                         <div className="mt-2">
-                          <label className="block text-sm font-medium">Facebook</label>
-                          <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} />
+                          <label className="block text-sm font-medium">
+                            Facebook
+                          </label>
+                          <Input
+                            value={state.footer.facebook}
+                            onChange={(e) =>
+                              setState((prev) => ({
+                                ...prev,
+                                footer: {
+                                  ...prev.footer,
+                                  facebook: e.target.value,
+                                },
+                              }))
+                            }
+                          />
                         </div>
                       </div>
                     </CardContent>
                   </Card>
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="appearance">
-                <AccordionTrigger>Appearance</AccordionTrigger>
-                <AccordionContent>
-                  <div className="mt-4">
-                    <h3 className="text-lg font-semibold">Appearance settings</h3>
-                    <div className="mt-2">
-                      <label className="block text-sm font-medium">Title Color</label>
-                      <input type="color" value={titleColor} onChange={(e) => setTitleColor(e.target.value)} />
-                    </div>
-                    <div className="mt-2">
-                      <label className="block text-sm font-medium">Subtitle Color</label>
-                      <input type="color" value={subtitleColor} onChange={(e) => setSubtitleColor(e.target.value)} />
-                    </div>
-                    <div className="mt-2">
-                      <label className="block text-sm font-medium">Description Color</label>
-                      <input type="color" value={descriptionColor} onChange={(e) => setDescriptionColor(e.target.value)} />
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
             </Accordion>
           </div>
         )}
-              <div className={`h-full ${isPreview ? 'w-full p-4 bg-gray-100' : 'w-2/3 p-4 bg-gray-100'}`}>
-          <div className={`p-4 bg-white rounded shadow ${isPreview ? 'h-screen' : 'h-[70vh]'}`} style={{ backgroundImage: `url(${headerBackground})`, backgroundSize: 'cover' }}>
-            {companyLogo && <img src={companyLogo} alt="Company Logo" className="h-12 mb-4" />}
-            <h2 className="text-2xl font-bold" style={{ color: titleColor }}>{title}</h2>
-            <p className="text-lg mt-2" style={{ color: subtitleColor }}>{subtitle}</p>
-            <p className="mt-4" style={{ color: descriptionColor }}>{description}</p>
+        <div
+          className={`h-full ${state.isPreview ? "w-full p-4" : "w-2/3 p-4"}`}
+        >
+          <div
+            className={`relative p-4 bg-white rounded ${
+              state.isPreview ? "h-screen" : "h-[70vh]"
+            }`}
+          >
+            <HeroBackgroundSection
+              title={state.header.title}
+              titleColor={state.header.titleColor}
+              subtitleColor={state.header.subtitleColor}
+              subtitleText={state.header.subtitle}
+              descriptionColor={state.header.descriptionColor}
+              descriptionText={state.header.description}
+              companyLogo={state.header.companyLogo}
+              backgroundImage={state.header.headerBackground}
+            />
           </div>
-          <div className="p-4 bg-white rounded shadow mt-4 flex">
-            <div className="w-1/2">
-              <h2 className="text-2xl font-bold" style={{ color: titleColor }}>{introTitle}</h2>
-              <p className="mt-4" style={{ color: descriptionColor }}>{introDescription}</p>
+          <div
+            className={`p-4 bg-white rounded flex ${
+              state.isPreview ? "mt-[4rem]" : "mt-[18rem]"
+            }`}
+          >
+            <div
+              className={`w-1/2 ${state.isPreview ? "h-[60vh]" : "h-[40vh]"}`}
+            >
+              <h2
+                className="text-2xl font-bold"
+                style={{ color: state.intro.introTitleColor }}
+              >
+                {state.intro.introTitle}
+              </h2>
+              <p
+                className="mt-4"
+                style={{ color: state.intro.introDescriptionColor }}
+              >
+                {state.intro.introDescription}
+              </p>
               <Button className="mt-4">Read More</Button>
             </div>
-            <div className="w-1/2 flex justify-center items-center">
-              {introMedia && <img src={introMedia} alt="Introduction Media" className="mt-4" />}
+            <div className="w-1/3 flex justify-center items-center">
+              {state.intro.introMedia && (
+                <ThreeDCard
+                  buttonText="Read More"
+                  imageUrl={state.intro.introMedia}
+                />
+              )}
             </div>
           </div>
-          {introImage && (
+          {state?.introMediaSection?.introImage && (
             <a href="#" className="block mt-4">
-                <div className={`w-full h-96 bg-cover bg-center ${isPreview ? 'h-screen' : 'h-[70vh]'}`} style={{ backgroundImage: `url(${introImage})` }}></div>
+              <div
+                className={`w-full h-96 bg-cover bg-center ${
+                  state.isPreview ? "h-screen" : "h-[70vh]"
+                }`}
+                style={{
+                  backgroundImage: `url(${state?.introMediaSection?.introImage})`,
+                  backgroundSize: "contain",
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "center",
+                }}
+              ></div>
             </a>
           )}
-          {featuredImage && (
-            <div className={`p-4 bg-white rounded shadow mt-4 flex ${isPreview ? 'h-[60vh]' : 'h-[30vh]'}`}>
+          {state.featured.featuredImage && (
+            <div
+              className={`p-4 bg-white rounded mt-4 flex ${
+                state.isPreview ? "h-[80vh]" : "h-[60vh]"
+              }`}
+            >
               <div className="w-1/2">
-                <h2 className="text-2xl font-bold" style={{ color: titleColor }}>{featuredTitle}</h2>
-                <p className="mt-4" style={{ color: descriptionColor }}>{featuredDescription}</p>
-                <Button className="mt-4" onClick={() => window.location.href = '#'}>Full Menu</Button>
+                <h2
+                  className="text-2xl font-bold"
+                  style={{ color: state.featured.featuredTitleColor }}
+                >
+                  {state.featured.featuredTitle}
+                </h2>
+                <p
+                  className="mt-4"
+                  style={{ color: state.featured.featuredDescriptionColor }}
+                >
+                  {state.featured.featuredDescription}
+                </p>
+                <Button
+                  className="mt-4"
+                  onClick={() => (window.location.href = "#")}
+                >
+                  Full Menu
+                </Button>
               </div>
               <div className="w-1/2 flex justify-center items-center">
-                <img src={featuredImage} alt="Featured Menu" className="mt-4" />
+                <motion.img
+                  src={state.featured.featuredImage}
+                  alt="Featured Menu"
+                  className="mt-4"
+                />
               </div>
             </div>
           )}
           <div className="p-4 bg-black text-white rounded shadow mt-4 flex justify-between">
             <div>
-              <h3 className="text-lg font-semibold" >QUICK LINKS</h3>
+              <h3
+                className="text-lg font-semibold"
+                style={{ color: state.footer?.footerTitleColor }}
+              >
+                QUICK LINKS
+              </h3>
               <ul className="mt-2">
                 <li>About Us</li>
                 <li>Privacy Policy</li>
@@ -306,14 +686,41 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold" >LOCATION</h3>
-              <p className="mt-2">{location}</p>
+              <h3
+                className="text-lg font-semibold"
+                style={{ color: state.footer.footerTitleColor }}
+              >
+                LOCATION
+              </h3>
+              <p
+                className="mt-2"
+                style={{ color: state.footer.footerDescriptionColor }}
+              >
+                {state.footer.location}
+              </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold" >WE ARE SOCIAL</h3>
+              <h3
+                className="text-lg font-semibold"
+                style={{ color: state.footer.footerTitleColor }}
+              >
+                WE ARE SOCIAL
+              </h3>
               <div className="mt-2 flex space-x-4">
-                <a href={instagram} target="_blank" rel="noopener noreferrer">Instagram</a>
-                <a href={facebook} target="_blank" rel="noopener noreferrer">Facebook</a>
+                <a
+                  href={state.footer.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Instagram
+                </a>
+                <a
+                  href={state.footer.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Facebook
+                </a>
               </div>
               <Button className="mt-4">Leave Us Your Feedback</Button>
             </div>
