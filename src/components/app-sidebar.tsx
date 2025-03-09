@@ -1,60 +1,47 @@
-import { Calendar, Home, Inbox, Search, Settings, X } from "lucide-react";
-import { useState } from 'react';
-import './app-sidebar.css';
-
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Calendar, Home, Inbox, Search } from "lucide-react";
+import { Link } from "react-router-dom";
+import "./app-sidebar.css";
+import { NavUser } from "./ui/nav-user";
 
 // Menu items.
 const items = [
   {
     title: "Dashboard",
-    url: "dashboard",
+    url: "/dashboard",
     icon: Home,
   },
   {
     title: "Menu Items",
-    url: "menu-item",
+    url: "/menu-item",
     icon: Inbox,
   },
   {
-    title: "orders",
-    url: "orders",
+    title: "Orders",
+    url: "/orders",
     icon: Calendar,
   },
   {
     title: "Website Builder",
-    url: "website-builder",
+    url: "/website-builder",
     icon: Search,
   },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-]
+];
 
-export function AppSidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const handleToggle = () => {
-    setIsCollapsed(!isCollapsed);
-  };
-
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar className={isCollapsed ? 'collapsed' : ''}>
-      <button onClick={handleToggle} className="toggle-button">
-        <X />
-      </button>
-      <SidebarContent className={isCollapsed ? 'collapsed-content' : ''}>
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Cloud Kitchen Partner</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -62,10 +49,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url} className="menu-item">
+                    <Link to={item.url} className="menu-item">
                       <item.icon />
-                      {!isCollapsed && <span>{item.title}</span>}
-                    </a>
+                      <span>{item.title}</span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -73,8 +60,17 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <NavUser
+          user={{
+            name: "Mohammed Buraiah",
+            email: "testing12345@gmail.com",
+            avatar: "https://avatars.dicebear.com/api/avataaars/mohammed.svg",
+          }}
+        />
+      </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
 
 export default AppSidebar;

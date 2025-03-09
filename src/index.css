@@ -71,6 +71,7 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
@@ -113,6 +114,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -122,12 +124,15 @@
   .sidebar.collapsed {
     width: var(--sidebar-width-icon);
   }
+
   .sidebar.collapsed .sidebar-content {
     display: none;
   }
+
   .sidebar.collapsed .sidebar-menu-button {
     justify-content: center;
   }
+
   .sidebar.collapsed .sidebar-menu-button span {
     display: none;
   }
