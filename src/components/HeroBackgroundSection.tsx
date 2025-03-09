@@ -1,4 +1,3 @@
-"use client";
 import { ColourfulText } from "@/components/ui/colourful-text";
 import { motion } from "motion/react";
 
@@ -47,7 +46,7 @@ export function HeroBackgroundSection({
           style={{ color: titleColor }}
           className="text-2xl md:text-5xl lg:text-7xl font-bold text-center relative z-2 font-sans"
         >
-          {title} <ColourfulText text={motionText} /> <br /> {endText}
+          {title} <ColourfulText text={motionText ?? ""} /> <br /> {endText}
         </h1>
         {subtitleText && (
           <h2 style={{ color: subtitleColor }} className="text-3xl">

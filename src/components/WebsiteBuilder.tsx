@@ -69,10 +69,11 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
       featuredDescriptionColor: "#000000",
     },
     footer: footerSection,
-    isPreview: true,
+    isPreview: false,
   });
 
   useEffect(() => {
+    // @ts-expect-error -- commented out because of the error
     setState((prevState) => ({
       ...prevState,
       header: { ...headerSection },
@@ -101,6 +102,7 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
         setState((prevState) => ({
           ...prevState,
           [key.split(".")[0]]: {
+            // @ts-expect-error -- commented out because of the error
             ...prevState?.[key?.split(".")?.[0]],
             [key.split(".")[1]]: reader.result,
           },
@@ -110,8 +112,6 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
     }
   };
 
-  console.log("sdfsfds", state);
-
   const togglePreview = () => {
     setState((prevState) => ({
       ...prevState,
@@ -120,12 +120,17 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
   };
 
   return (
-    <div>
-      <div className="flex justify-end mb-4">
-        <Button onClick={togglePreview}>
-          {state.isPreview ? "Exit Preview" : "Preview"}
-        </Button>
-        <Button className="ml-2">Save & publish</Button>
+    <div className="w-full">
+      <div className="flex items-center mb-2 justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Webiste Builder</h1>
+        </div>
+        <div className="flex justify-end mb-4">
+          <Button onClick={togglePreview}>
+            {state.isPreview ? "Exit Preview" : "Preview"}
+          </Button>
+          <Button className="ml-2">Save & publish</Button>
+        </div>
       </div>
       <div className="flex">
         {!state.isPreview && (
@@ -145,6 +150,7 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
                           <Input
                             type="file"
                             onChange={(e) =>
+                              // @ts-expect-error -- commented out because of the error
                               handleFileChange(e, "header.companyLogo")
                             }
                           />
@@ -156,6 +162,7 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
                           <Input
                             type="file"
                             onChange={(e) =>
+                              // @ts-expect-error -- commented out because of the error
                               handleFileChange(e, "header.headerBackground")
                             }
                           />
@@ -327,6 +334,7 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
                           <Input
                             type="file"
                             onChange={(e) =>
+                              // @ts-expect-error -- commented out because of the error
                               handleFileChange(e, "intro.introMedia")
                             }
                           />
@@ -393,6 +401,7 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
                           <Input
                             type="file"
                             onChange={(e) =>
+                              // @ts-expect-error -- commented out because of the error
                               handleFileChange(e, "intro.introImage")
                             }
                           />
@@ -451,6 +460,7 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
                           <Input
                             type="file"
                             onChange={(e) =>
+                              // @ts-expect-error -- commented out because of the error
                               handleFileChange(e, "featured.featuredImage")
                             }
                           />
@@ -671,12 +681,7 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
           )}
           <div className="p-4 bg-black text-white rounded shadow mt-4 flex justify-between">
             <div>
-              <h3
-                className="text-lg font-semibold"
-                style={{ color: state.footer?.footerTitleColor }}
-              >
-                QUICK LINKS
-              </h3>
+              <h3 className="text-lg font-semibold">QUICK LINKS</h3>
               <ul className="mt-2">
                 <li>About Us</li>
                 <li>Privacy Policy</li>
@@ -686,26 +691,11 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
               </ul>
             </div>
             <div>
-              <h3
-                className="text-lg font-semibold"
-                style={{ color: state.footer.footerTitleColor }}
-              >
-                LOCATION
-              </h3>
-              <p
-                className="mt-2"
-                style={{ color: state.footer.footerDescriptionColor }}
-              >
-                {state.footer.location}
-              </p>
+              <h3 className="text-lg font-semibold">LOCATION</h3>
+              <p className="mt-2">{state.footer.location}</p>
             </div>
             <div>
-              <h3
-                className="text-lg font-semibold"
-                style={{ color: state.footer.footerTitleColor }}
-              >
-                WE ARE SOCIAL
-              </h3>
+              <h3 className="text-lg font-semibold">WE ARE SOCIAL</h3>
               <div className="mt-2 flex space-x-4">
                 <a
                   href={state.footer.instagram}
