@@ -1,10 +1,10 @@
-import * as React from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface UserLoginFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -13,15 +13,15 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { signup } = useAuth();
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
 
     try {
-      const success = await login(email, password);
-      
+      const success = await signup(email, password);
+
       if (success) {
         navigate("/dashboard");
       } else {

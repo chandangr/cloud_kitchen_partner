@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import Onboarding from "@/components/Onboarding";
 import BreadcrumbNav from "@/components/ui/BreadcrumbNav";
 import {
   SidebarInset,
@@ -123,6 +124,7 @@ function App() {
               )
             }
           />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
