@@ -43,7 +43,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Cloud Kitchen Partner</SidebarGroupLabel>
+          <SidebarGroupLabel>Cloud Kitchen Client</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (

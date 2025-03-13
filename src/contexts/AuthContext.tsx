@@ -1,4 +1,4 @@
-import { createClient, Session } from "@supabase/supabase-js";
+import { createClient, Session, User } from "@supabase/supabase-js";
 import React, { createContext, useContext, useState } from "react";
 
 const VITE_SUPERBASE_URL = "https://qvkgwzkfbsahxyooshan.supabase.co";
@@ -14,7 +14,8 @@ type AuthContextType = {
   signup: (email: string, password: string) => Promise<boolean>;
   signin: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  authenticatedUser: Session | null | undefined;
+  authUser: User | undefined;
+  session?: Session;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -23,12 +24,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [authenticatedUser, setAuthenticatedUser] = useState<
-    Session | null | undefined
-  >();
+  const [authUser, setAuthUser] = useState<User>();
+  const [session, setSession] = useState<Session | undefined>();
 
   const signup = async (email: string, password: string) => {
-    console.log("sdfsd", email, password);
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -40,8 +39,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return false;
       }
 
-      setAuthenticatedUser(data?.session);
-      setIsAuthenticated(!!data?.user);
+      if (data?.session) {
+        setSession(data.session);
+      }
       return true;
     } catch (error) {
       console.error("Signup error:", error);
@@ -61,6 +61,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return false;
       }
 
+      console.log("sdfsdf", data);
+      setSession(data?.session);
+      setAuthUser(data?.user);
       setIsAuthenticated(!!data?.user);
       return true;
     } catch (error) {
@@ -72,12 +75,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     supabase.auth.signOut();
     setIsAuthenticated(false);
-    setAuthenticatedUser(null);
+    setSession(undefined);
   };
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, authenticatedUser, signup, signin, logout }}
+      value={{ isAuthenticated, session, authUser, signup, signin, logout }}
     >
       {children}
     </AuthContext.Provider>
