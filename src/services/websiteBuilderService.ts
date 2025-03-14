@@ -1,4 +1,5 @@
 import { supabase } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import { updateClientWebsiteId } from "./clientService";
 import { authorizeUser } from "./utils";
 
@@ -62,8 +63,12 @@ export const createClientWebsite = async (data: any) => {
       ])
       .select();
 
-    if (error) return;
+    if (error) {
+      toast.error("Failed to create client website.");
+      return;
+    }
     await updateClientWebsiteId(resData?.[0].id);
+    toast.success("Client website created successfully.");
   }
 };
 
@@ -75,6 +80,7 @@ export const getClientKitchenWebsiteData = async (id: string) => {
     .single();
 
   if (error) {
+    toast.error("Failed to fetch kitchen website data.");
     throw new Error(error.message);
   }
 

@@ -2,6 +2,7 @@ import { SignupData } from "@/components/AuthTabs";
 import { createClientAfterSignUp } from "@/services/clientService";
 import { createClient, Session, User } from "@supabase/supabase-js";
 import React, { createContext, useContext, useState } from "react";
+import { toast } from "sonner";
 
 const VITE_SUPERBASE_URL = "https://qvkgwzkfbsahxyooshan.supabase.co";
 const VITE_SUPERBASE_API_KEY =
@@ -51,6 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (error) {
         console.error("Signup failed:", error.message);
+        toast.error(`Signup failed: ${error.message}`);
         return false;
       }
 
@@ -61,8 +63,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         );
         supabase.auth?.storage?.setItem("client", JSON.stringify(clientData));
       }
+      toast.success("User signed up successfully.");
     } catch (error) {
       console.error("Signup error:", error);
+      toast.error("Signup error occurred.");
       return false;
     }
   };
@@ -76,6 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (error) {
         console.error("Signin failed:", error.message);
+        toast.error(`Signin failed: ${error.message}`);
         return;
       }
 
@@ -87,8 +92,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (clientError) {
         console.error("Error fetching client data:", clientError.message);
+        toast.error(`Error fetching client data: ${clientError.message}`);
         return;
       }
+      toast.success("User logged in successfully.");
       setSession(data?.session);
       supabase.auth?.storage?.setItem("client", JSON.stringify(clientData));
       supabase.auth?.storage?.setItem("user", JSON.stringify(data?.user));
@@ -98,15 +105,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return clientData;
     } catch (error) {
       console.error("Signin error:", error);
+      toast.error("Signin error occurred.");
       return;
     }
   };
 
   const logout = () => {
+    toast.success("User logging out...");
     supabase.auth.signOut();
     supabase.auth?.storage?.removeItem("client");
     supabase.auth?.storage?.removeItem("user");
-
     setIsAuthenticated(false);
     setSession(undefined);
     window.location.href = "/login"; // Navigate to login page after signup

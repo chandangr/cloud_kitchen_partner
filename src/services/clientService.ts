@@ -2,6 +2,7 @@ import { SignupData } from "@/components/AuthTabs";
 import { supabase } from "@/contexts/AuthContext";
 import { Session } from "@supabase/supabase-js";
 import console from "console";
+import { toast } from "sonner";
 import { authorizeUser } from "./utils";
 
 export async function createClientAfterSignUp(
@@ -28,8 +29,11 @@ export async function createClientAfterSignUp(
 
   if (error) {
     console.error("Error creating client:", error);
+    toast.error("Failed to create client.");
     throw new Error(error.message);
   }
+
+  toast.success("Client created successfully.");
   return data;
 }
 
@@ -39,12 +43,14 @@ export const updateClientWebsiteId = async (cloudKitchenId: string) => {
   const { error } = await supabase
     .from("client")
     .update({ cloud_kitchen_website_id: cloudKitchenId, is_first_time: false })
-    .eq("user_id", userDetails?.id); // Update the client where user_id matches
+    .eq("user_id", userDetails?.id);
 
   if (error) {
     console.error("Error updating client:", error);
+    toast.error("Failed to update client.");
     throw new Error(error.message);
   }
+  toast.success("Client updated successfully.");
 };
 
 export const insertClientData = async (data) => {
@@ -56,10 +62,14 @@ export const insertClientData = async (data) => {
         dob: "234234",
         cloud_kitchen_website_id: null,
       },
-    ]) // Include user ID if necessary
+    ])
     .select();
 
-  return error;
+  if (error) {
+    toast.error("Failed to insert client data.");
+    return error;
+  }
+  toast.success("Client data inserted successfully.");
 };
 
 export const updateClient = async (clientData: Partial<SignupData>) => {
@@ -75,7 +85,9 @@ export const updateClient = async (clientData: Partial<SignupData>) => {
 
   if (error) {
     console.error("Error updating client:", error);
+    toast.error("Failed to update client.");
     throw new Error(error.message);
   }
   supabase.auth?.storage?.setItem("client", JSON.stringify(data));
+  toast.success("Client updated successfully.");
 };
