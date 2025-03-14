@@ -1,16 +1,27 @@
 import NoDataIcon from "@/components/icons/NoDataIcon";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import AddMenuItemDrawer, { FoodItem } from "./AddMenuItemDrawer";
+import { fetchDishItems, insertDishItem } from "@/services/dishItemService";
+import { useEffect, useState } from "react";
+import AddMenuItemDrawer, { DishItem } from "./AddMenuItemDrawer";
 import { ThreeDCard } from "./ThreeDCard";
 
 const MenuItemPage = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [menuItems, setMenuItems] = useState<FoodItem[]>([]);
+  const [menuItems, setMenuItems] = useState<DishItem[]>([]);
 
-  const handleAddMenuItem = (newItem: FoodItem) => {
-    setMenuItems((prevItems) => [...prevItems, newItem]);
+  const handleAddMenuItem = async (newItem: DishItem) => {
+    await insertDishItem(newItem);
+    const items = await fetchDishItems();
+    setMenuItems(items);
   };
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const items = await fetchDishItems();
+      setMenuItems(items);
+    };
+    fetchItems();
+  }, []);
 
   return (
     <div className="w-full">
@@ -28,15 +39,15 @@ const MenuItemPage = () => {
           {menuItems.map((item, index) => (
             <ThreeDCard
               key={index}
-              title={item?.food_name}
-              titleBadge={item.food_category}
-              tags={item.food_tags}
-              description={item.food_recipe}
+              title={item?.dish_name}
+              titleBadge={item.dish_category}
+              tags={item.dish_tags}
+              description={item.dish_recipe}
               imageUrl="https://www.livofy.com/health/wp-content/uploads/2023/05/Add-a-heading-6.png"
-              buttonText={item.food_price}
+              buttonText={item.dish_price}
               descriptionList={[
-                { title: "Price", value: `${item.food_price} rs` },
-                { title: "Calorie Count", value: item.food_calorie_count },
+                { title: "Price", value: `${item.dish_price} rs` },
+                { title: "Calorie Count", value: item.dish_calorie_count },
               ]}
             />
           ))}

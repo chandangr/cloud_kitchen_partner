@@ -1,5 +1,5 @@
 import { AuthTabs } from "@/components/AuthTabs";
-import { getClientData } from "@/services/supabaseService";
+import { getClientData } from "@/services/utils";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 

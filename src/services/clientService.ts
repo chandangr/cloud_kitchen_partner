@@ -45,3 +45,18 @@ export const updateClientWebsiteId = async (cloudKitchenId: string) => {
     throw new Error(error.message);
   }
 };
+
+export const insertClientData = async (data) => {
+  const { data: resData, error } = await supabase
+    .from("client")
+    .insert([
+      {
+        ...data,
+        dob: "234234",
+        cloud_kitchen_website_id: null,
+      },
+    ]) // Include user ID if necessary
+    .select();
+
+  return error;
+};

@@ -10,3 +10,9 @@ export function authorizeUser() {
   }
   return userDetails;
 }
+
+export const getClientData = async () => {
+  const { data: client, error } = await supabase.from("client").select("*");
+
+  console.log("client", client, error);
+};
