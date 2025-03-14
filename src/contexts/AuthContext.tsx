@@ -1,3 +1,5 @@
+import { SignupData } from "@/components/AuthTabs";
+import { createClientAfterSignUp } from "@/services/clientService";
 import { createClient, Session, User } from "@supabase/supabase-js";
 import React, { createContext, useContext, useState } from "react";
 
@@ -9,13 +11,18 @@ const supabaseUrl = VITE_SUPERBASE_URL;
 const supabaseAnonKey = VITE_SUPERBASE_API_KEY;
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+type SessionData = {
+  clientId?: string;
+} & Session;
+
 type AuthContextType = {
   isAuthenticated: boolean;
-  signup: (email: string, password: string) => Promise<boolean>;
+  signup: (formData: SignupData) => Promise<boolean>;
   signin: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   authUser: User | undefined;
-  session?: Session;
+  session?: SessionData;
+  setSessionData?: (session: SessionData) => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -25,14 +32,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authUser, setAuthUser] = useState<User>();
-  const [session, setSession] = useState<Session | undefined>();
+  const [session, setSession] = useState<SessionData | undefined>();
 
-  const signup = async (email: string, password: string) => {
+  const setSessionData = (session: SessionData) => {
+    setSession(session);
+    setAuthUser(session.user);
+    setIsAuthenticated(!!session.user);
+  };
+
+  const signup = async (formdata: SignupData) => {
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: formdata?.email,
+        password: formdata?.password,
       });
+
+      setIsAuthenticated(false);
 
       if (error) {
         console.error("Signup failed:", error.message);
@@ -40,9 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       if (data?.session) {
-        setSession(data.session);
+        await createClientAfterSignUp(formdata, data?.session);
       }
-      return true;
     } catch (error) {
       console.error("Signup error:", error);
       return false;
@@ -58,17 +72,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (error) {
         console.error("Signin failed:", error.message);
-        return false;
+        return;
       }
 
-      console.log("sdfsdf", data);
+      const { data: clientData, error: clientError } = await supabase
+        .from("client")
+        .select("*")
+        .eq("user_id", data.user.id)
+        .single();
+
+      if (clientError) {
+        console.error("Error fetching client data:", clientError.message);
+        return;
+      }
       setSession(data?.session);
+      supabase.auth?.storage?.setItem("user", JSON.stringify(data?.user));
       setAuthUser(data?.user);
       setIsAuthenticated(!!data?.user);
-      return true;
+
+      return clientData;
     } catch (error) {
       console.error("Signin error:", error);
-      return false;
+      return;
     }
   };
 
@@ -80,7 +105,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, session, authUser, signup, signin, logout }}
+      value={{
+        isAuthenticated,
+        session,
+        authUser,
+        signup,
+        signin,
+        logout,
+        setSessionData,
+      }}
     >
       {children}
     </AuthContext.Provider>

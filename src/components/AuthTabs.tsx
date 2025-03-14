@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
-import { createClientAfterSignUp } from "@/services/clientService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import console from "console";
 import { useState } from "react";
@@ -50,7 +49,7 @@ const signupSchema = z
     message: "Passwords must match",
     path: ["reEnterPassword"],
   });
-export interface SignupData extends z.infer<typeof signupSchema> {}
+export interface SignupFormData extends z.infer<typeof signupSchema> {}
 
 const signinSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -59,7 +58,7 @@ const signinSchema = z.object({
 export interface SigninData extends z.infer<typeof signinSchema> {}
 
 export function AuthTabs() {
-  const { signup, signin, session } = useAuth();
+  const { signup, signin } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
@@ -94,13 +93,12 @@ export function AuthTabs() {
     formState: { errors },
   } = signUpform;
 
-  const onSubmit = async (data: SignupData | typeof signinSchema) => {
+  const onSubmit = async (data: SignupFormData | typeof signinSchema) => {
     setIsLoading(true);
     if (activeTab === "signup") {
-      const formData = data as SignupData;
+      const formData = data as SignupFormData;
       try {
-        await signup(formData.email, formData.password);
-        await createClientAfterSignUp(formData, session);
+        await signup(formData);
         signUpform.reset();
         setActiveTab("login");
       } catch (error) {
@@ -112,8 +110,12 @@ export function AuthTabs() {
     } else if (activeTab === "login") {
       const formData = data as SigninData;
       try {
-        await signin(formData.email, formData.password);
-        navigate("/onboarding");
+        const clientData = await signin(formData.email, formData.password);
+        if (clientData && clientData?.is_first_time) {
+          navigate("/onboarding");
+        } else {
+          navigate("/dashboard");
+        }
       } catch (error) {
         console.error("Authentication error:", error);
         toast.error("An error occurred during authentication.");

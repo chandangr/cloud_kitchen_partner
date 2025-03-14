@@ -7,13 +7,11 @@ export const insertClientData = async (data) => {
       {
         ...data,
         dob: "234234",
-        cloud_kitchen_id: null,
-        website_builder_id: null,
+        cloud_kitchen_website_id: null,
       },
     ]) // Include user ID if necessary
     .select();
 
-  console.log("resData", resData);
   return error;
 };
 

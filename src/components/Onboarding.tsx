@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { createClientWebsite } from "@/services/websiteBuilderService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -35,8 +36,13 @@ const Onboarding = () => {
   } = form;
 
   const onSubmitStep = async (data) => {
-    console.log("Step 2 data:", data);
-    navigate("/dashboard");
+    try {
+      await createClientWebsite(data);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Failed to create website builder:", error);
+      // Optionally, you can show a toast notification or an error message here
+    }
   };
 
   return (
