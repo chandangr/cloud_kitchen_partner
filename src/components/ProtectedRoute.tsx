@@ -1,10 +1,12 @@
-import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/contexts/AuthContext";
 import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedRoute = () => {
-  const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) {
-    // Redirect to the login page if not authenticated
+  const userRes = supabase.auth?.storage?.getItem("user");
+  const userDetails = JSON.parse(userRes);
+
+  // Check if the session exists
+  if (!userDetails?.id) {
     return <Navigate to="/login" replace />;
   }
 
