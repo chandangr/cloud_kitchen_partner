@@ -25,6 +25,7 @@ export async function createClientAfterSignUp(
       },
     ])
     .select();
+
   if (error) {
     console.error("Error creating client:", error);
     throw new Error(error.message);
@@ -59,4 +60,22 @@ export const insertClientData = async (data) => {
     .select();
 
   return error;
+};
+
+export const updateClient = async (clientData: Partial<SignupData>) => {
+  const userDetails = authorizeUser();
+  if (!userDetails) return;
+
+  const { error, data } = await supabase
+    .from("client")
+    .update(clientData)
+    .eq("user_id", userDetails.id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error updating client:", error);
+    throw new Error(error.message);
+  }
+  supabase.auth?.storage?.setItem("client", JSON.stringify(data));
 };

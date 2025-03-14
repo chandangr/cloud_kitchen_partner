@@ -16,6 +16,7 @@ import {
 import { AppSidebar } from "./components/app-sidebar";
 import LoginPage from "./components/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { supabase } from "./contexts/AuthContext";
 
 const Dashboard = lazy(() => import("@/components/Dashboard"));
 const MenuItemPage = lazy(() => import("@/components/MenuItemPage"));
@@ -58,11 +59,15 @@ function App() {
       facebook: "https://facebook.com/butthicloudkitchen",
     },
   };
+  const clientRes = supabase.auth?.storage?.getItem("client");
+  const clientDetails = JSON.parse(clientRes);
 
-  const user = {
-    name: "Mohammed Buraiah",
-    email: "testing12345@gmail.com",
-    avatar: "https://avatars.dicebear.com/api/avataaars/mohammed.svg",
+  const client = {
+    name: clientDetails?.name,
+    email: clientDetails?.email,
+    avatar:
+      clientDetails?.avatar ??
+      "https://avatars.dicebear.com/api/avataaars/mohammed.svg",
   };
 
   return (
@@ -79,7 +84,7 @@ function App() {
                 <SidebarProvider>
                   <AppSidebar />
                   <SidebarInset>
-                    <Header user={user} />
+                    <Header user={client} />
                     <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                       <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
@@ -117,7 +122,7 @@ function App() {
           <Route
             path="/"
             element={
-              user ? (
+              clientDetails ? (
                 <Navigate to="/dashboard" replace />
               ) : (
                 <Navigate to="/login" replace />

@@ -66,3 +66,17 @@ export const createClientWebsite = async (data: any) => {
     await updateClientWebsiteId(resData?.[0].id);
   }
 };
+
+export const getClientKitchenWebsiteData = async (id: string) => {
+  const { data, error } = await supabase
+    .from("cloud_kitchen_website")
+    .select("*")
+    .eq("user_id", id)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+};

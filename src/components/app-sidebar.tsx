@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { supabase } from "@/contexts/AuthContext";
 import { Calendar, Home, Inbox, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import "./app-sidebar.css";
@@ -39,6 +40,9 @@ const items = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const clientRes = supabase.auth?.storage?.getItem("client");
+  const clientDetails = JSON.parse(clientRes);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent>
@@ -63,9 +67,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <NavUser
           user={{
-            name: "Mohammed Buraiah",
-            email: "testing12345@gmail.com",
-            avatar: "https://avatars.dicebear.com/api/avataaars/mohammed.svg",
+            name: clientDetails?.name,
+            email: clientDetails?.email,
+            avatar:
+              clientDetails?.avatar ??
+              "https://avatars.dicebear.com/api/avataaars/mohammed.svg",
           }}
         />
       </SidebarFooter>

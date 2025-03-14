@@ -55,7 +55,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       if (data?.session) {
-        await createClientAfterSignUp(formdata, data?.session);
+        const clientData = await createClientAfterSignUp(
+          formdata,
+          data?.session
+        );
+        supabase.auth?.storage?.setItem("client", JSON.stringify(clientData));
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -86,6 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
       setSession(data?.session);
+      supabase.auth?.storage?.setItem("client", JSON.stringify(clientData));
       supabase.auth?.storage?.setItem("user", JSON.stringify(data?.user));
       setAuthUser(data?.user);
       setIsAuthenticated(!!data?.user);
@@ -99,7 +104,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = () => {
     supabase.auth.signOut();
+    supabase.auth?.storage?.removeItem("client");
     supabase.auth?.storage?.removeItem("user");
+
     setIsAuthenticated(false);
     setSession(undefined);
     window.location.href = "/login"; // Navigate to login page after signup
