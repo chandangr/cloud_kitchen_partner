@@ -1,9 +1,8 @@
-import { supabase } from "@/contexts/AuthContext";
+import { getAuthUserData } from "@/lib/utils";
 import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedRoute = () => {
-  const userRes = supabase.auth?.storage?.getItem("user");
-  const userDetails = JSON.parse(userRes);
+  const userDetails = getAuthUserData();
 
   // Check if the session exists
   if (!userDetails?.id) {

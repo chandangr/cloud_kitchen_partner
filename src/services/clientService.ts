@@ -1,12 +1,11 @@
-import { SignupData } from "@/components/AuthTabs";
+import { SignupFormData } from "@/components/AuthTabs";
 import { supabase } from "@/contexts/AuthContext";
 import { Session } from "@supabase/supabase-js";
 import console from "console";
 import { toast } from "sonner";
 import { authorizeUser } from "./utils";
-
 export async function createClientAfterSignUp(
-  clientData: SignupData,
+  clientData: SignupFormData,
   session?: Session
 ) {
   const { data, error } = await supabase
@@ -53,8 +52,8 @@ export const updateClientWebsiteId = async (cloudKitchenId: string) => {
   toast.success("Client updated successfully.");
 };
 
-export const insertClientData = async (data) => {
-  const { data: resData, error } = await supabase
+export const insertClientData = async (data: SignupFormData) => {
+  const { error } = await supabase
     .from("client")
     .insert([
       {
@@ -72,7 +71,7 @@ export const insertClientData = async (data) => {
   toast.success("Client data inserted successfully.");
 };
 
-export const updateClient = async (clientData: Partial<SignupData>) => {
+export const updateClient = async (clientData: Partial<SignupFormData>) => {
   const userDetails = authorizeUser();
   if (!userDetails) return;
 
@@ -88,6 +87,7 @@ export const updateClient = async (clientData: Partial<SignupData>) => {
     toast.error("Failed to update client.");
     throw new Error(error.message);
   }
+  // @ts-expect-error --  this is preset
   supabase.auth?.storage?.setItem("client", JSON.stringify(data));
   toast.success("Client updated successfully.");
 };

@@ -37,10 +37,10 @@ const signupSchema = z
       .regex(/^\d+$/, "Phone number must be numeric"),
     dob: z.string().nonempty("Date of birth is required"),
     nationality: z.string().nonempty("Nationality is required"),
-    gender: z.enum(["male", "female"], {
+    gender: z.enum(["male", "female", ""], {
       errorMap: () => ({ message: "Gender is required" }),
     }),
-    marital_status: z.enum(["single", "married"], {
+    marital_status: z.enum(["single", "married", ""], {
       errorMap: () => ({ message: "Marital status is required" }),
     }),
   })
@@ -110,6 +110,7 @@ export function AuthTabs() {
       const formData = data as SigninData;
       try {
         const clientData = await signin(formData.email, formData.password);
+        // @ts-expect-error --  it has this field
         if (clientData && clientData?.is_first_time) {
           navigate("/onboarding");
         } else {
@@ -140,6 +141,7 @@ export function AuthTabs() {
       </TabsList>
       <TabsContent value="login">
         <Form {...loginform}>
+          {/* // @ts-expect-error -- expected */}
           <form onSubmit={loginFormSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={loginControl}

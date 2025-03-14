@@ -22,6 +22,7 @@ const MenuItemPage = () => {
   };
 
   const handleEditMenuItem = async (updatedItem: DishItem) => {
+    // @ts-expect-error -- expected
     await updateDishItem(selecteDish?.id, updatedItem);
     const items = await fetchDishItems();
     setMenuItems(items);

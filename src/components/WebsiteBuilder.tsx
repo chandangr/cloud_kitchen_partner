@@ -97,7 +97,7 @@ const WebsiteBuilder = (props: WebsiteBuilderProps) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = (data) => {
+      reader.onloadend = () => {
         setState((prevState) => ({
           ...prevState,
           [key.split(".")[0]]: {

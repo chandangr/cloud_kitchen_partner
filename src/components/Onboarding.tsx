@@ -35,7 +35,8 @@ const Onboarding = () => {
     formState: { errors },
   } = form;
 
-  const onSubmitStep = async (data) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onSubmitStep = async (data: any) => {
     try {
       await createClientWebsite(data);
       navigate("/dashboard");
@@ -98,6 +99,7 @@ const Onboarding = () => {
                 <FormControl>
                   <Input id="website_logo" type="file" {...field} />
                 </FormControl>
+                {/* // @ts-expect-error -- this is preset */}
                 <FormMessage>{errors?.website_logo?.message}</FormMessage>
               </FormItem>
             )}

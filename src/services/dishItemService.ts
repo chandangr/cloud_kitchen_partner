@@ -1,8 +1,9 @@
+import { DishItem } from "@/components/DishItemDrawer";
 import { supabase } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { authorizeUser } from "./utils";
 
-export const insertDishItem = async (data) => {
+export const insertDishItem = async (data: DishItem) => {
   const userDetails = authorizeUser();
   if (!userDetails) return;
   const { error } = await supabase
@@ -16,7 +17,7 @@ export const insertDishItem = async (data) => {
   toast.success("New dish created successfully.");
 };
 
-export const updateDishItem = async (id, data) => {
+export const updateDishItem = async (id: string, data: DishItem) => {
   const userDetails = authorizeUser();
   if (!userDetails) return;
   const { error } = await supabase
@@ -32,9 +33,9 @@ export const updateDishItem = async (id, data) => {
   toast.success("Dish updated successfully.");
 };
 
-export const fetchDishItems = async () => {
+export const fetchDishItems = async (): Promise<DishItem[]> => {
   const userDetails = authorizeUser();
-  if (!userDetails) return;
+  if (!userDetails) return [];
   const { data, error } = await supabase
     .from("dish_item")
     .select("*")

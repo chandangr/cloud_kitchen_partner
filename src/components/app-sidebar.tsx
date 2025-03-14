@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { supabase } from "@/contexts/AuthContext";
+import { getClientData } from "@/lib/utils";
 import { Calendar, Home, Inbox, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import "./app-sidebar.css";
@@ -40,8 +40,7 @@ const items = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const clientRes = supabase.auth?.storage?.getItem("client");
-  const clientDetails = JSON.parse(clientRes);
+  const clientDetails = getClientData();
 
   return (
     <Sidebar collapsible="icon" {...props}>

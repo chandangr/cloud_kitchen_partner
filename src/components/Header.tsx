@@ -8,7 +8,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { supabase, useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { getAuthUserData, getClientData } from "@/lib/utils";
 import { getClientKitchenWebsiteData } from "@/services/websiteBuilderService";
 import { BadgeCheck, Bell, CreditCard, LogOut, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -27,13 +28,11 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
   const { logout } = useAuth();
   const [isAccountDrawerOpen, setAccountDrawerOpen] = useState(false);
   const [websiteKitchenData, setWebisteKitchenData] = useState<any>(null);
-  const clientRes = supabase.auth?.storage?.getItem("client");
-  const clientDetails = clientRes ? JSON.parse(clientRes) : null;
+  const clientDetails = getClientData();
 
   useEffect(() => {
     const fetchData = async () => {
-      const userRes = supabase.auth?.storage?.getItem("user");
-      const userDetails = JSON.parse(userRes);
+      const userDetails = getAuthUserData();
       if (!userDetails?.id) return;
       try {
         const data = await getClientKitchenWebsiteData(userDetails?.id);

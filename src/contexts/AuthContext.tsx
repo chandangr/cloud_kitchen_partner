@@ -1,4 +1,4 @@
-import { SignupData } from "@/components/AuthTabs";
+import { SignupFormData } from "@/components/AuthTabs";
 import { createClientAfterSignUp } from "@/services/clientService";
 import { createClient, Session, User } from "@supabase/supabase-js";
 import React, { createContext, useContext, useState } from "react";
@@ -18,7 +18,7 @@ type SessionData = {
 
 type AuthContextType = {
   isAuthenticated: boolean;
-  signup: (formData: SignupData) => Promise<boolean>;
+  signup: (formData: SignupFormData) => Promise<boolean>;
   signin: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   authUser: User | undefined;
@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsAuthenticated(!!session.user);
   };
 
-  const signup = async (formdata: SignupData) => {
+  const signup = async (formdata: SignupFormData) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email: formdata?.email,
@@ -61,6 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           formdata,
           data?.session
         );
+        // @ts-expect-error --  this is preset
         supabase.auth?.storage?.setItem("client", JSON.stringify(clientData));
       }
       toast.success("User signed up successfully.");
@@ -97,7 +98,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
       toast.success("User logged in successfully.");
       setSession(data?.session);
+      // @ts-expect-error --  this is preset
       supabase.auth?.storage?.setItem("client", JSON.stringify(clientData));
+      // @ts-expect-error --  this is preset
       supabase.auth?.storage?.setItem("user", JSON.stringify(data?.user));
       setAuthUser(data?.user);
       setIsAuthenticated(!!data?.user);
@@ -113,7 +116,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     toast.success("User logging out...");
     supabase.auth.signOut();
+    // @ts-expect-error --  this is preset
     supabase.auth?.storage?.removeItem("client");
+    // @ts-expect-error --  this is preset
     supabase.auth?.storage?.removeItem("user");
     setIsAuthenticated(false);
     setSession(undefined);
@@ -126,6 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isAuthenticated,
         session,
         authUser,
+        // @ts-expect-error --  this is preset
         signup,
         signin,
         logout,

@@ -16,7 +16,7 @@ import {
 import { AppSidebar } from "./components/app-sidebar";
 import LoginPage from "./components/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { supabase } from "./contexts/AuthContext";
+import { getClientData } from "./lib/utils";
 
 const Dashboard = lazy(() => import("@/components/Dashboard"));
 const MenuItemPage = lazy(() => import("@/components/MenuItemPage"));
@@ -59,8 +59,7 @@ function App() {
       facebook: "https://facebook.com/butthicloudkitchen",
     },
   };
-  const clientRes = supabase.auth?.storage?.getItem("client");
-  const clientDetails = JSON.parse(clientRes);
+  const clientDetails = getClientData();
 
   const client = {
     name: clientDetails?.name,
