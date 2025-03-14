@@ -13,6 +13,20 @@ export const insertDishItem = async (data) => {
   }
 };
 
+export const updateDishItem = async (id, data) => {
+  const userDetails = authorizeUser();
+  if (!userDetails) return;
+  const { error } = await supabase
+    .from("dish_item")
+    .update({ ...data })
+    .eq("id", id)
+    .eq("user_id", userDetails?.id);
+  if (error) {
+    console.error("Error updating dish item:", error);
+    throw new Error("Failed to update dish item");
+  }
+};
+
 export const fetchDishItems = async () => {
   const userDetails = authorizeUser();
   if (!userDetails) return;
@@ -26,5 +40,18 @@ export const fetchDishItems = async () => {
   }
   return data;
 };
+export const deleteDishItem = async (id: string) => {
+  const userDetails = authorizeUser();
+  if (!userDetails) return;
 
-// Add more API functions as needed
+  const { error } = await supabase
+    .from("dish_item")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", userDetails?.id);
+
+  if (error) {
+    console.error("Error deleting dish item:", error);
+    throw new Error("Failed to delete dish item");
+  }
+};

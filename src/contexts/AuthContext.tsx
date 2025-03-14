@@ -99,8 +99,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = () => {
     supabase.auth.signOut();
+    supabase.auth?.storage?.removeItem("user");
     setIsAuthenticated(false);
     setSession(undefined);
+    window.location.href = "/login"; // Navigate to login page after signup
   };
 
   return (

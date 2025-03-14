@@ -493,7 +493,7 @@ const cuisineTypes = {
 
 const formSchema = z.object({
   dish_name: z.string().nonempty("Dish name is required."),
-  dish_image: z.string(),
+  dish_image: z.string().optional(),
   dish_recipe: z.string().nonempty("Dish recipe is required."),
   dish_calorie_count: z.string().nonempty("Calories is required."),
   dish_price: z.string().nonempty("Price is required."),
@@ -511,62 +511,54 @@ const formSchema = z.object({
 
 const cuisineList = Object.keys(cuisineTypes).map((cuisine) => cuisine);
 
-export type DishItem = z.infer<typeof formSchema>;
+export type DishItem = { id: string } & z.infer<typeof formSchema>;
 
-export type AddMenuItemDrawerProps = {
+export type DishItemDrawerProps = {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (data: DishItem) => void;
+  onEdit: (data: DishItem) => void;
+  initialValues?: Partial<DishItem>;
 };
 
-const AddMenuItemDrawer = ({
+const DishItemDrawer = ({
   isOpen,
   onClose,
   onAdd,
-}: AddMenuItemDrawerProps) => {
+  onEdit,
+  initialValues,
+}: DishItemDrawerProps) => {
   const [files, setFiles] = useState<File[] | null>(null);
-
   const dropZoneConfig = {
     maxFiles: 5,
     maxSize: 1024 * 1024 * 4,
     multiple: true,
   };
-  const form = useForm<z.infer<typeof formSchema>>({
+  console.log("initialValues", initialValues);
+
+  const form = useForm<DishItem>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      dish_name: "",
-      dish_recipe: "",
-      dish_calorie_count: "",
-      dish_price: "",
-      dish_tags: [],
-      dish_image: "",
-      dish_category: "",
-      dish_type: "",
-      dish_occasion: "",
-      dish_dietary: "",
-      dish_cooking_methods: "",
-      cuisine_type: "",
-      cuisine: "",
+      ...initialValues,
+      dish_calorie_count: initialValues?.dish_calorie_count?.toString(),
+      dish_price: initialValues?.dish_price?.toString(),
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = async (values: DishItem) => {
     try {
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
-      onClose();
-      onAdd(values);
+      if (initialValues) {
+        onEdit(values);
+      } else {
+        onAdd(values);
+      }
       form.reset();
+      onClose();
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
     }
-  }
-
-  console.log("form", form);
+  };
 
   const isCuisinePresent = !!cuisineTypes?.[form.getValues("cuisine")];
 
@@ -574,7 +566,9 @@ const AddMenuItemDrawer = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[70%]">
         <DialogHeader>
-          <DialogTitle>Add Dish Item</DialogTitle>
+          <DialogTitle>
+            {initialValues ? "Edit Dish Item" : "Add Dish Item"}
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -645,6 +639,7 @@ const AddMenuItemDrawer = ({
                     <FormItem className="w-full">
                       <FormLabel>Cuisine</FormLabel>
                       <Select
+                        value={field.value}
                         onValueChange={(val) => {
                           field.onChange?.(val);
                           form.setValue("cuisine_type", "");
@@ -833,7 +828,7 @@ const AddMenuItemDrawer = ({
                     <FormLabel>Add tags</FormLabel>
                     <FormControl>
                       <TagsInput
-                        value={field.value}
+                        value={field?.value ?? []}
                         onValueChange={(tags) => {
                           form.setValue("dish_tags", tags);
                         }}
@@ -892,7 +887,12 @@ const AddMenuItemDrawer = ({
               />
             </div>
 
-            <Button type="submit">Submit</Button>
+            <Button
+              type="submit"
+              disabled={!form.formState.isDirty && !!initialValues}
+            >
+              Submit
+            </Button>
           </form>
         </Form>
       </DialogContent>
@@ -900,4 +900,4 @@ const AddMenuItemDrawer = ({
   );
 };
 
-export default AddMenuItemDrawer;
+export default DishItemDrawer;

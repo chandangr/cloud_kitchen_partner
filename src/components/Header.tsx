@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/AuthContext";
 import { BadgeCheck, Bell, CreditCard, LogOut, Sparkles } from "lucide-react";
 import React from "react";
 
@@ -21,6 +22,8 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ user }) => {
+  const { logout } = useAuth();
+
   return (
     <header className="flex justify-between items-center p-4 bg-background shadow-md">
       <h1 className="text-xl font-bold">Cloud Kitchen</h1>
@@ -66,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={logout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
